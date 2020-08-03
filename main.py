@@ -56,6 +56,7 @@ def minimum_distance_heuristic():
             else:
                 min_dist = min(min_dist, abs(temp[0] - x) + abs(temp[1] - y))
                 first_try -= 1
+    return min_dist
 
 
 def maximum_distance_heuristic():
@@ -65,6 +66,7 @@ def maximum_distance_heuristic():
             if (givenMap.get(first) == 'blue' or givenMap.get(first) == 'red') and (
                     givenMap.get(second) == 'blue' or givenMap.get(second) == 'red'):
                 max_dist = max(max_dist, abs(first[0] - second[0]) + abs(first[0] - second[0]))
+    return max_dist
 
 
 while (True):
