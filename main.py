@@ -4,11 +4,11 @@ class State:
         self.y = y
         self.bigH = None
 
-    def bigH_update(self, m):
+    def h_update(self, m):
         self.bigH = min(self.bigH, m)
 
 
-f = open('/Users/apple/Desktop/givenMap.txt')
+f = open('/Users/apple/Desktop/Mario.txt')
 
 n = int(f.readline())
 m = int(f.readline())
@@ -46,14 +46,29 @@ def final_print():
     print('Number of steps to reach the first BLUE mushroom: ', blueSteps)
 
 
+def minimum_distance_heuristic():
+    first_try = 1
+    min_dist = 10000
+    for temp in givenMap:
+        if givenMap.get(temp) == 'blue' or givenMap.get(temp) == 'red':
+            if first_try == 1:
+                min_dist = temp[0] - x + temp[1] - y
+            else:
+                min_dist = min(min_dist, temp[0] - x + temp[1] - y)
+                first_try -= 1
+
+
 while (True):
+
+    # minimum_distance_heuristic()
+    #  break
 
     if redBool & blueBool:
         final_print()
         break
 
-# '''nxpancpanc
-# a ckadncp
-#
-# aaxax
-# '''
+    # '''nxpancpanc
+    # a ckadncp
+    #
+    # aaxax
+    # '''
