@@ -1,11 +1,15 @@
 class State:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    map = dict()
+
+    def __init__(self, input_map):
+        self.map = input_map
         self.bigH = None
 
-    def h_update(self, m):
+    def big_h_update(self, m):
         self.bigH = min(self.bigH, m)
+
+    def get_map(self):
+        return self.map
 
 
 f = open('/Users/apple/Desktop/Mario.txt')
@@ -40,6 +44,10 @@ print(givenMap)
 stepNums = 0
 remaining = 2 * k
 
+current = givenMap.copy()
+states = list()
+states.append(State(current))
+
 
 def final_print():
     print('Number of steps to reach the first RED mushroom: ', redSteps)
@@ -49,10 +57,10 @@ def final_print():
 def minimum_distance_heuristic():
     first_try = 1
     min_dist = 10000
-    for temp in givenMap:
-        if givenMap.get(temp) == 'blue' or givenMap.get(temp) == 'red':
+    for temp in current:
+        if current.get(temp) == 'blue' or current.get(temp) == 'red':
             if first_try == 1:
-                min_dist = temp[0] - x + temp[1] - y
+                min_dist = abs(temp[0] - x) + abs(temp[1] - y)
             else:
                 min_dist = min(min_dist, abs(temp[0] - x) + abs(temp[1] - y))
                 first_try -= 1
@@ -61,18 +69,18 @@ def minimum_distance_heuristic():
 
 def maximum_distance_heuristic():
     max_dist = -1
-    for first in givenMap:
-        for second in givenMap:
-            if (givenMap.get(first) == 'blue' or givenMap.get(first) == 'red') and (
-                    givenMap.get(second) == 'blue' or givenMap.get(second) == 'red'):
+    for first in current:
+        for second in current:
+            if (current.get(first) == 'blue' or current.get(first) == 'red') and (
+                    current.get(second) == 'blue' or current.get(second) == 'red'):
                 max_dist = max(max_dist, abs(first[0] - second[0]) + abs(first[0] - second[0]))
     return max_dist
 
 
 while (True):
 
-    # minimum_distance_heuristic()
-    #  break
+    # print(maximum_distance_heuristic())
+    # break
 
     if redBool & blueBool:
         final_print()
