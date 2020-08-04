@@ -86,8 +86,32 @@ while (True):
         final_print()
         break
 
-    # '''nxpancpanc
-    # a ckadncp
-    #
-    # aaxax
-    # '''
+    if states[0].get((1, 1)) is None:
+        states[0][1, 1] = 'black'
+        print(states[0])
+
+        diffChecker = False
+
+        for tempState in states:
+            diffChecker = False
+            for tempLoc in tempState.keys():
+                if tempState.get(tempLoc) != current.get(tempLoc):
+                    diffChecker = True
+                    break
+            if diffChecker is False:
+                break
+
+        if diffChecker:
+            states.append(current)
+        else:
+            print('Kamel shavad')
+
+        break
+    else:
+        break
+
+# '''nxpancpanc
+# a ckadncp
+#
+# aaxax
+# '''
