@@ -9,43 +9,6 @@ class State:
         self.bigH = min(self.bigH, m)
 
 
-f = open('/Users/apple/Desktop/Mario.txt')
-
-n = int(f.readline())
-m = int(f.readline())
-
-sc = list(f.readline().split())
-x, y = int(sc[0]), int(sc[1])
-
-k = int(f.readline())
-reds = blues = k
-
-blueBool = redBool = False
-blueSteps = redSteps = 0
-
-givenMap = dict()
-
-for i in range(k):
-    sc = list(f.readline().split())
-    givenMap[int(sc[0]), int(sc[1])] = 'red'
-for i in range(k):
-    sc = list(f.readline().split())
-    givenMap[int(sc[0]), int(sc[1])] = 'blue'
-
-for line in f:
-    if line.strip() != '':
-        sc = list(line.split())
-        givenMap[int(sc[0]), int(sc[1])] = 'block'
-print('Given map: ', givenMap)
-
-stepNums = 0
-remaining = 2 * k
-
-current = State(givenMap.copy())
-last = None
-states = []
-
-
 def final_print():
     print('Number of steps to reach the first RED mushroom: ', redSteps)
     print('Number of steps to reach the first BLUE mushroom: ', blueSteps)
@@ -74,8 +37,68 @@ def maximum_distance_heuristic():
     return max_dist
 
 
-while (True):
+def lrta_star_cost(input_state):
+    input_state = State(input_state)
 
+    min_big_h = 2147483647
+    # inja?
+    min_big_h = input_state.bigH
+
+    for temp in result.keys():
+        if temp[0].state_map == input_state.state_map:
+            min_big_h = min(min_big_h, result[temp].bigH)
+
+    # ya inja?
+    min_big_h = input_state.bigH
+
+    return min_big_h
+
+
+f = open('/Users/apple/Desktop/Mario.txt')
+
+n = int(f.readline())
+m = int(f.readline())
+
+sc = list(f.readline().split())
+x, y = int(sc[0]), int(sc[1])
+
+k = int(f.readline())
+reds = blues = k
+
+blueBool = redBool = False
+blueSteps = redSteps = 0
+
+givenMap = dict()
+
+for i in range(k):
+    sc = list(f.readline().split())
+    givenMap[int(sc[0]), int(sc[1])] = 'red'
+for i in range(k):
+    sc = list(f.readline().split())
+    givenMap[int(sc[0]), int(sc[1])] = 'blue'
+
+for line in f:
+    if line.strip() != '':
+        sc = list(line.split())
+        givenMap[int(sc[0]), int(sc[1])] = 'block'
+
+givenMap[x, y] = 'mario'
+print('Given map: ', givenMap)
+
+stepNums = 0
+remaining = 2 * k
+
+currentDict = dict()
+for key in givenMap.keys():
+    if givenMap[key] == 'red' or givenMap[key] == 'blue' or givenMap[key] == 'mario':
+        currentDict[key] = givenMap[key]
+current = State(currentDict.copy())
+
+last = None
+states = []
+
+result = dict()
+action = ''
 
 while True:
 
@@ -83,13 +106,23 @@ while True:
         final_print()
         break
 
-    if any(state.state_map == current.state_map for state in states):
-        print(states[states.index(current)].bigH)
-    else:
+    print('remaining heuristic: ', remaining)
+    print('minimum_distance heuristic: ', minimum_distance_heuristic())
+    print('maximum_distance heuristic: ', maximum_distance_heuristic())
+    print('current_state map: ', current.state_map)
+    print('last_state map: ', last)
+    if not any(state.state_map == current.state_map for state in states):
+        current.big_h_update(remaining)
         states.append(current)
-        states[states.index(current)].big_h_update(remaining)
+        # states[states.index(current)].big_h_update(remaining)
+    else:
+        print(states[states.index(current)].bigH)
 
     if last is not None:
         print('result[last, action = current')
+        result[last, action] = current
+        states[states.index(last)].big_h_update(lrta_star_cost(last))
+
+    last = current
 
     break
