@@ -3,7 +3,7 @@ class State:
 
     def __init__(self, input_map):
         self.state_map = input_map
-        self.bigH = None
+        self.bigH = 2147483647
 
     def big_h_update(self, m):
         self.bigH = min(self.bigH, m)
@@ -42,7 +42,8 @@ stepNums = 0
 remaining = 2 * k
 
 current = State(givenMap.copy())
-states = [current]
+last = None
+states = []
 
 
 def final_print():
@@ -82,28 +83,13 @@ while True:
         final_print()
         break
 
-    diffChecker = False
-
-    for tempState in states:
-        diffChecker = False
-        for tempLoc in tempState.state_map.keys():
-            if tempState.state_map.get(tempLoc) != current.state_map.get(tempLoc):
-                diffChecker = True
-                break
-        if diffChecker is False:
-            break
-
-    if diffChecker:
+    if any(state.state_map == current.state_map for state in states):
+        print(states[states.index(current)].bigH)
+    else:
         states.append(current)
         states[states.index(current)].big_h_update(remaining)
-    else:
-        print('Kamel shavad')
-        print(states[states.index(current)].bigH)
+
+    if last is not None:
+        print('result[last, action = current')
 
     break
-
-# '''nxpancpanc
-# a ckadncp
-#
-# aaxax
-# '''
