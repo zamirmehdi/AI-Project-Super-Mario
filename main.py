@@ -1,15 +1,12 @@
 class State:
-    map = dict()
+    state_map = dict()
 
     def __init__(self, input_map):
-        self.map = input_map
+        self.state_map = input_map
         self.bigH = None
 
     def big_h_update(self, m):
         self.bigH = min(self.bigH, m)
-
-    def get_map(self):
-        return self.map
 
 
 f = open('/Users/apple/Desktop/Mario.txt')
@@ -39,14 +36,13 @@ for line in f:
     if line.strip() != '':
         sc = list(line.split())
         givenMap[int(sc[0]), int(sc[1])] = 'block'
-print(givenMap)
+print('Given map: ', givenMap)
 
 stepNums = 0
 remaining = 2 * k
 
-current = givenMap.copy()
-states = list()
-states.append(State(current))
+current = State(givenMap.copy())
+states = [current]
 
 
 def final_print():
@@ -57,8 +53,8 @@ def final_print():
 def minimum_distance_heuristic():
     first_try = 1
     min_dist = 10000
-    for temp in current:
-        if current.get(temp) == 'blue' or current.get(temp) == 'red':
+    for temp in current.state_map:
+        if current.state_map.get(temp) == 'blue' or current.state_map.get(temp) == 'red':
             if first_try == 1:
                 min_dist = abs(temp[0] - x) + abs(temp[1] - y)
             else:
@@ -69,46 +65,42 @@ def minimum_distance_heuristic():
 
 def maximum_distance_heuristic():
     max_dist = -1
-    for first in current:
-        for second in current:
-            if (current.get(first) == 'blue' or current.get(first) == 'red') and (
-                    current.get(second) == 'blue' or current.get(second) == 'red'):
+    for first in current.state_map:
+        for second in current.state_map:
+            if (current.state_map.get(first) == 'blue' or current.state_map.get(first) == 'red') and (
+                    current.state_map.get(second) == 'blue' or current.state_map.get(second) == 'red'):
                 max_dist = max(max_dist, abs(first[0] - second[0]) + abs(first[0] - second[0]))
     return max_dist
 
 
 while (True):
 
-    # print(maximum_distance_heuristic())
-    # break
+
+while True:
 
     if redBool & blueBool:
         final_print()
         break
 
-    if states[0].get((1, 1)) is None:
-        states[0][1, 1] = 'black'
-        print(states[0])
+    diffChecker = False
 
+    for tempState in states:
         diffChecker = False
-
-        for tempState in states:
-            diffChecker = False
-            for tempLoc in tempState.keys():
-                if tempState.get(tempLoc) != current.get(tempLoc):
-                    diffChecker = True
-                    break
-            if diffChecker is False:
+        for tempLoc in tempState.state_map.keys():
+            if tempState.state_map.get(tempLoc) != current.state_map.get(tempLoc):
+                diffChecker = True
                 break
+        if diffChecker is False:
+            break
 
-        if diffChecker:
-            states.append(current)
-        else:
-            print('Kamel shavad')
-
-        break
+    if diffChecker:
+        states.append(current)
+        states[states.index(current)].big_h_update(remaining)
     else:
-        break
+        print('Kamel shavad')
+        print(states[states.index(current)].bigH)
+
+    break
 
 # '''nxpancpanc
 # a ckadncp
