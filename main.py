@@ -61,11 +61,13 @@ def lrta_star_cost(input_state):
 
     # if result is not None:
     for temp_action in input_state.possible_actions:
-        if result.get(input_state, temp_action) is None:
-            min_big_h = input_state
+        # print('injaaa  ', result.get((input_state, temp_action)) is None)
+        if result.get((input_state, temp_action)) is None:
+            min_big_h = input_state.bigH
+
         # elif result.get(input_state, temp_action).state_map != input_state.state_map:
         else:
-            min_big_h = min(min_big_h, result.get(input_state, temp_action).bigH + step_cost)
+            min_big_h = min(min_big_h, result[input_state, temp_action].bigH + step_cost)
 
     # for temp in result.keys():
     #     # print('action haii ke b block mikhoran check beshan')
@@ -77,7 +79,6 @@ def lrta_star_cost(input_state):
 
 def move(input_state):
     state = input_state
-    # print(state is current)
     ideal_action = ''
     minimum_cost = 2147483647
 
@@ -103,8 +104,8 @@ def move(input_state):
             # elif result[state, temp_action].bigH < minimum_cost:
             #     ideal_action = temp_action
             #     minimum_cost = min(minimum_cost, result[state, temp_action].bigH + 1)
-    print(minimum_cost)
-    print(ideal_action)
+    print('minimum cost for actions: ', minimum_cost)
+    print('chosen action: ', ideal_action)
 
     next_map = state.state_map.copy()
     next_mario_loc = tuple()
@@ -138,7 +139,6 @@ def move(input_state):
 
     global stepNums
     stepNums += 1
-    print(stepNums)
 
     # return State
     # for temp in result.keys():
@@ -193,13 +193,14 @@ result = dict()
 action = ''
 step_cost = 1
 
+print('''\n*** LRTA* algorithm using REMAINING heuristic ***\n-------------------------------------------------''')
 while True:
 
     if redBool & blueBool:
         final_print()
         break
 
-    print('STEP %i:' % stepNums)
+    print('\nSTEP %i:' % stepNums)
 
     # print('remaining heuristic: ', remaining)
     # print('minimum_distance heuristic: ', minimum_distance_heuristic())
@@ -231,5 +232,5 @@ while True:
     last = current
     last_is_None = False
 
-    # if stepNums > 20:
-    break
+    if stepNums > 3:
+        break
