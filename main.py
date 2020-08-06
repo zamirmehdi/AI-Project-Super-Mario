@@ -27,8 +27,7 @@ class State:
 
 
 def final_print():
-    print('Number of steps to reach the first RED mushroom: ', redSteps)
-    print('Number of steps to reach the first BLUE mushroom: ', blueSteps)
+    print('Number of steps to reach both Red and Blue Mushrooms: ', stepNums)
 
 
 def minimum_distance_heuristic():
@@ -102,7 +101,7 @@ for line in f:
 givenMap[x, y] = 'mario'
 print('Given map: ', givenMap)
 
-stepNums = 0
+stepNums = 1
 remaining = 2 * k
 
 currentDict = dict()
@@ -111,11 +110,13 @@ for key in givenMap.keys():
         currentDict[key] = givenMap[key]
 current = State(currentDict.copy())
 
-last = None
+last_is_None = True
+last = State(None)
 states = []
 
 result = dict()
 action = ''
+step_cost = 1
 
 while True:
 
@@ -123,23 +124,37 @@ while True:
         final_print()
         break
 
-    print('remaining heuristic: ', remaining)
-    print('minimum_distance heuristic: ', minimum_distance_heuristic())
-    print('maximum_distance heuristic: ', maximum_distance_heuristic())
-    print('current_state map: ', current.state_map)
-    print('last_state map: ', last)
+    print('STEP %i:' % stepNums)
+
+    # print('remaining heuristic: ', remaining)
+    # print('minimum_distance heuristic: ', minimum_distance_heuristic())
+    # print('maximum_distance heuristic: ', maximum_distance_heuristic())
+    # print('current_state map: ', current.state_map)
+    # print('last_state map: ', last)
+
+    ## H(current state) update if current state is a NEW STATE:
     if not any(state.state_map == current.state_map for state in states):
         current.big_h_update(remaining)
+        print('H(current state) updated to: ', current.bigH)
         states.append(current)
-        # states[states.index(current)].big_h_update(remaining)
-    else:
-        print(states[states.index(current)].bigH)
 
-    if last is not None:
-        print('result[last, action = current')
+    else:
+        print('H(current state) is: ', states[states.index(current)].bigH)
+
+    ## if last state is not null do 2 things:
+    if not last_is_None:
+        ### 1) add the previous action( + its origin state and its destination state ) to results
         result[last, action] = current
+
+        ### 2) update H(last state) with minimum amount of relative states H (using LRTA*-Cost function)
         states[states.index(last)].big_h_update(lrta_star_cost(last))
+        print('H(previous state) updated to: ', states[states.index(last)].bigH)
+
+    ## take an action on current state:
+    move(current)
 
     last = current
+    last_is_None = False
 
+    # if stepNums > 20:
     break
