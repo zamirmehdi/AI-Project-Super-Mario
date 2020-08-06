@@ -1,9 +1,26 @@
 class State:
     state_map = dict()
+    mario_loc = None
+    possible_actions = []
 
     def __init__(self, input_map):
-        self.state_map = input_map
-        self.bigH = 2147483647
+        # in is not None ke ezafe kardam moshkel dorost nakone
+        if input_map is not None:
+            self.state_map = input_map
+            self.bigH = 2147483647
+
+            key_list = list(self.state_map.keys())
+            val_list = list(self.state_map.values())
+            self.mario_loc = key_list[val_list.index('mario')]
+
+            if self.mario_loc[0] != 1:
+                self.possible_actions.append('left')
+            if self.mario_loc[0] != m:
+                self.possible_actions.append('down')
+            if self.mario_loc[1] != 1:
+                self.possible_actions.append('right')
+            if self.mario_loc[1] != n:
+                self.possible_actions.append('up')
 
     def big_h_update(self, m):
         self.bigH = min(self.bigH, m)
