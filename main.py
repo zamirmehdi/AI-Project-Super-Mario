@@ -54,18 +54,23 @@ def maximum_distance_heuristic():
 
 
 def lrta_star_cost(input_state):
-    input_state = State(input_state)
-
+    # input_state = State(input_state)
+    # print(input_state == current)
     min_big_h = 2147483647
-    # inja?
-    min_big_h = input_state.bigH
+    # min_big_h = input_state.bigH
 
-    for temp in result.keys():
-        if temp[0].state_map == input_state.state_map:
-            min_big_h = min(min_big_h, result[temp].bigH)
+    # if result is not None:
+    for temp_action in input_state.possible_actions:
+        if result.get(input_state, temp_action) is None:
+            min_big_h = input_state
+        # elif result.get(input_state, temp_action).state_map != input_state.state_map:
+        else:
+            min_big_h = min(min_big_h, result.get(input_state, temp_action).bigH + step_cost)
 
-    # ya inja?
-    min_big_h = input_state.bigH
+    # for temp in result.keys():
+    #     # print('action haii ke b block mikhoran check beshan')
+    #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
+    #         min_big_h = min(min_big_h, result.get(temp).bigH + step_cost)
 
     return min_big_h
 
