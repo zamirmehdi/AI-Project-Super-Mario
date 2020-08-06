@@ -75,6 +75,76 @@ def lrta_star_cost(input_state):
     return min_big_h
 
 
+def move(input_state):
+    state = input_state
+    # print(state is current)
+    ideal_action = ''
+    minimum_cost = 2147483647
+
+    for temp_action in state.possible_actions:
+        # !!! CHECK IF STATE AND THE STATE IN RESULT ARE THE SAME AND RESULT[STATE, ...] WORKS?!
+        # agar be divar khord oon action az liste actionash pak she
+        ## new actions cost the amount of H(state)
+        if result.get((state, temp_action)) is None:
+            if ideal_action == '' or state.bigH <= minimum_cost:
+                ideal_action = temp_action
+                minimum_cost = min(minimum_cost, state.bigH)
+
+            # elif state.bigH <= minimum_cost:
+            #     minimum_cost = min(minimum_cost, state.bigH)
+            #     ideal_action = temp_action
+        ## repeated actions may have new cost amounts
+        else:
+            # print('action haii ke b block mikhoran check beshan')
+            # print('va inke lrta* lazeme ya H()?')
+            if ideal_action == '' or result.get(state, temp_action).bigH < minimum_cost:
+                ideal_action = temp_action
+                minimum_cost = min(minimum_cost, result.get(state, temp_action).bigH + 1)
+            # elif result[state, temp_action].bigH < minimum_cost:
+            #     ideal_action = temp_action
+            #     minimum_cost = min(minimum_cost, result[state, temp_action].bigH + 1)
+    print(minimum_cost)
+    print(ideal_action)
+
+    next_map = state.state_map.copy()
+    next_mario_loc = tuple()
+
+    if ideal_action == 'left':
+        next_mario_loc = (state.mario_loc[0] - 1, state.mario_loc[1])
+    if ideal_action == 'down':
+        next_mario_loc = (state.mario_loc[0], state.mario_loc[1] - 1)
+    if ideal_action == 'right':
+        next_mario_loc = (state.mario_loc[0] + 1, state.mario_loc[1])
+    if ideal_action == 'up':
+        next_mario_loc = (state.mario_loc[0], state.mario_loc[1] + 1)
+
+    if givenMap.get(next_mario_loc) == 'block':
+        dict(next_map)[next_mario_loc] = 'block'
+        next_mario_loc = state.mario_loc
+
+    elif state.state_map.get(next_mario_loc) == 'red' or state.state_map.get(next_mario_loc) == 'blue':
+        global remaining
+        remaining -= 1
+        del next_map[state.mario_loc]
+        next_map[next_mario_loc] = 'mario'
+        global current
+        current = State(next_map)
+
+        # key_list = list(next_map.keys())
+        # val_list = list(next_map.values())
+        # next_map.mario_loc = key_list[val_list.index('mario')]
+        # next_map(next_mario_loc)
+        # 'mario'
+
+    global stepNums
+    stepNums += 1
+    print(stepNums)
+
+    # return State
+    # for temp in result.keys():
+    #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
+
+
 f = open('/Users/apple/Desktop/Mario.txt')
 
 n = int(f.readline())
