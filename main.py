@@ -8,13 +8,10 @@ class State:
         if input_map is not None:
             self.state_map = input_map
             self.bigH = 2147483647
-
             key_list = list(self.state_map.keys())
             val_list = list(self.state_map.values())
             self.mario_loc = key_list[val_list.index('mario')]
             self.possible_actions_update()
-
-        # print('self ', self.possible_actions)
 
     def big_h_update(self, amount):
         self.bigH = min(self.bigH, amount)
@@ -60,13 +57,26 @@ def maximum_distance_heuristic():
 
 def lrta_star_cost(input_state):
     min_big_h = 2147483647
+    found = False
 
     for temp_action in input_state.possible_actions:
 
-        if result.get((input_state, temp_action)) is None:
-            min_big_h = input_state.bigH
-        else:
-            min_big_h = min(min_big_h, result[input_state, temp_action].bigH + step_cost)
+        for temp_tuple in result:
+            if temp_tuple[0].state_map == input_state.state_map and temp_tuple[1] == temp_action:
+                found = True
+                min_big_h = min(min_big_h, result.get(temp_tuple).bigH + step_cost)
+                break
+
+        if not found:
+            min_big_h = min(min_big_h, input_state.bigH)
+
+        found = False
+
+        # if result.get((input_state, temp_action)) is None:
+        #     min_big_h = input_state.bigH
+        # else:
+        #     min_big_h = min(min_big_h, result[input_state, temp_action].bigH + step_cost)
+
     # for temp in result.keys():
     #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
     #         min_big_h = min(min_big_h, result.get(temp).bigH + step_cost)
@@ -114,11 +124,6 @@ def move(input_state):
     ## if the result of the chosen action is a BLOCK:
     if givenMap.get(next_mario_loc) == 'block':
         next_state.state_map[next_mario_loc] = 'block'
-        # print('nex ac: ', next_state.possible_actions)
-        # next_state.possible_actions.remove(ideal_action)
-        # next_state.possible_actions_update()
-        # print('jabbar ', next_state.possible_actions)
-
 
     ## if the result of the chosen action is a MUSHROOM:
     elif state.state_map.get(next_mario_loc) == 'red' or state.state_map.get(next_mario_loc) == 'blue':
@@ -167,6 +172,9 @@ def move(input_state):
 
     global stepNums
     stepNums += 1
+
+    global action
+    action = ideal_action
 
 
 ## data input from file and parameters creation:
@@ -226,7 +234,7 @@ print('''\n------------------------------------------------------------------
 ------------------------------------------------------------------''')
 while True:
 
-    if redBool & blueBool:
+    if redBool and blueBool:
         final_print()
         break
 
@@ -239,8 +247,12 @@ while True:
         states.append(current)
 
     else:
-        print('H(current state) is: ', states[states.index(current)].bigH)
-        # print('H(current state) is: ', current.bigH)
+        for state in states:
+            if state.state_map == current.state_map:
+                current = state
+                print('H(current state) is: ', current.bigH)
+                break
+        # print('H(current state) is: ', states[states.index(current)].bigH)
 
     ## if last state is not null do 2 things:
     if not last_is_None:
@@ -254,5 +266,5 @@ while True:
     ## take an action on current state:
     move(current)
 
-    if stepNums > 7:
+    if stepNums > 30:
         break
