@@ -99,6 +99,8 @@ def move(input_state):
     next_map = state.state_map.copy()
     next_mario_loc = tuple()
     next_state = State(next_map)
+    print('\ncurrent map ', next_state.state_map)
+    print('current actions ', next_state.possible_actions)
 
     if ideal_action == 'left':
         next_mario_loc = (state.mario_loc[0] - 1, state.mario_loc[1])
@@ -112,8 +114,10 @@ def move(input_state):
     ## if the result of the chosen action is a BLOCK:
     if givenMap.get(next_mario_loc) == 'block':
         next_state.state_map[next_mario_loc] = 'block'
-        next_state.possible_actions = state.possible_actions.copy()
-        next_state.possible_actions.remove(ideal_action)
+        # print('nex ac: ', next_state.possible_actions)
+        # next_state.possible_actions.remove(ideal_action)
+        # next_state.possible_actions_update()
+        # print('jabbar ', next_state.possible_actions)
 
 
     ## if the result of the chosen action is a MUSHROOM:
@@ -155,13 +159,11 @@ def move(input_state):
     print('\nnew amount of:\nRED mush= %i , BLUE mush= %i' % (reds, blues))
 
     global current
-    current = State(next_map)
-
-    # key_list = list(next_map.keys())
-    # val_list = list(next_map.values())
-    # next_map.mario_loc = key_list[val_list.index('mario')]
-    # next_map(next_mario_loc)
-    # 'mario'
+    global last
+    global last_is_None
+    last = current
+    current = next_state
+    last_is_None = False
 
     global stepNums
     stepNums += 1
@@ -210,6 +212,8 @@ current = State(currentDict.copy())
 
 last_is_None = True
 last = State(None)
+print('current')
+
 states = []
 
 result = dict()
@@ -236,6 +240,7 @@ while True:
 
     else:
         print('H(current state) is: ', states[states.index(current)].bigH)
+        # print('H(current state) is: ', current.bigH)
 
     ## if last state is not null do 2 things:
     if not last_is_None:
@@ -249,8 +254,5 @@ while True:
     ## take an action on current state:
     move(current)
 
-    last = current
-    last_is_None = False
-
-    if stepNums > 3:
+    if stepNums > 7:
         break
