@@ -32,8 +32,12 @@ class State:
 
 
 def final_print():
-    print('Number of steps to reach both Red and Blue Mushrooms: ', stepNums)
+    print('\n**********-----------------RESULT-----------------**********'
+          '\nNumber of steps to reach both RED and BLUE Mushrooms: <<%i>>' % stepNums)
+    print('------------------------------------------------------------')
 
+    print('final amount of mushrooms:\nRED = %i , BLUE = %i' % (reds, blues))
+    print('**********----------------------------------------**********')
 
 def minimum_distance_heuristic():
     first_try = 1
@@ -75,14 +79,6 @@ def lrta_star_cost(input_state):
 
         found = False
 
-        # if result.get((input_state, temp_action)) is None:
-        #     min_big_h = input_state.bigH
-        # else:
-        #     min_big_h = min(min_big_h, result[input_state, temp_action].bigH + step_cost)
-
-    # for temp in result.keys():
-    #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
-    #         min_big_h = min(min_big_h, result.get(temp).bigH + step_cost)
     return min_big_h
 
 
@@ -105,8 +101,6 @@ def move(input_state):
             if temp_tuple[0].state_map == state.state_map and temp_tuple[1] == temp_action:
                 found = True
 
-                print('cost: ', temp_action, result.get(temp_tuple).bigH + step_cost)
-
                 if ideal_action == '' or result.get(temp_tuple).bigH < minimum_cost:
                     ideal_action = temp_action
                     minimum_cost = min(minimum_cost, result.get(temp_tuple).bigH + step_cost)
@@ -116,8 +110,6 @@ def move(input_state):
         ## new actions cost the amount of H(state)
         if not found:
             if ideal_action == '' or state.bigH <= minimum_cost:
-                print('cost new: ', temp_action, state.bigH)
-
                 ideal_action = temp_action
                 minimum_cost = min(minimum_cost, state.bigH)
 
@@ -126,8 +118,8 @@ def move(input_state):
     next_map = state.state_map.copy()
     next_mario_loc = tuple()
     next_state = State(next_map)
-    print('\ncurrent map ', next_state.state_map)
-    print('current actions ', next_state.possible_actions)
+    # print('\ncurrent map ', next_state.state_map)
+    # print('possible actions for current state ', next_state.possible_actions)
 
     if ideal_action == 'left':
         next_mario_loc = (state.mario_loc[0] - 1, state.mario_loc[1])
@@ -175,10 +167,10 @@ def move(input_state):
     next_state.possible_actions_update()
 
     # print('\nminimum cost = %i  => ideal action = %s' % (minimum_cost, ideal_action))
-    print('\nmario\'s loc: %s + %s => %s' % (state.mario_loc, ideal_action.upper(), next_state.mario_loc))
-    print('new map ', next_state.state_map)
-    print('new possible actions ', next_state.possible_actions)
-    print('\nnew amount of:\nRED mush= %i , BLUE mush= %i' % (reds, blues))
+    print('\nmario\'s loc: %s + "%s" => %s' % (state.mario_loc, ideal_action.upper(), next_state.mario_loc))
+    # print('new map ', next_state.state_map)
+    # print('new possible actions ', next_state.possible_actions)
+    print('\nnew amount of mushrooms:\nRED = %i , BLUE = %i' % (reds, blues))
 
     global current
     global last
@@ -275,11 +267,11 @@ while True:
     if not last_is_None:
         ### 1) add the previous action( + its origin state and its destination state ) to results
         result[last, action] = current
-        print('state numbers: ', len(states))
 
         ### 2) update H(last state) with minimum amount of relative states H (using LRTA*-Cost function)
         states[states.index(last)].big_h_update(lrta_star_cost(last))
         print('H(previous state) updated to: ', states[states.index(last)].bigH)
+        print('number of states:', len(states))
 
     ## take an action on current state:
     move(current)
