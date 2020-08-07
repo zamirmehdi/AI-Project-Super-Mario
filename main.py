@@ -1,10 +1,10 @@
 class State:
-    state_map = dict()
-    mario_loc = None
-    possible_actions = []
 
     def __init__(self, input_map):
-        # in is not None ke ezafe kardam moshkel dorost nakone
+        self.state_map = dict()
+        self.mario_loc = None
+        self.possible_actions = []
+
         if input_map is not None:
             self.state_map = input_map
             self.bigH = 2147483647
@@ -12,18 +12,23 @@ class State:
             key_list = list(self.state_map.keys())
             val_list = list(self.state_map.values())
             self.mario_loc = key_list[val_list.index('mario')]
+            self.possible_actions_update()
 
-            if self.mario_loc[0] != 1:
-                self.possible_actions.append('right')
-            if self.mario_loc[0] != m:
-                self.possible_actions.append('left')
-            if self.mario_loc[1] != 1:
-                self.possible_actions.append('down')
-            if self.mario_loc[1] != n:
-                self.possible_actions.append('up')
+        # print('self ', self.possible_actions)
 
-    def big_h_update(self, m):
-        self.bigH = min(self.bigH, m)
+    def big_h_update(self, amount):
+        self.bigH = min(self.bigH, amount)
+
+    def possible_actions_update(self):
+        self.possible_actions.clear()
+        if self.mario_loc[0] != m and self.state_map.get((self.mario_loc[0] + 1, self.mario_loc[1])) != 'block':
+            self.possible_actions.append('right')
+        if self.mario_loc[1] != n and self.state_map.get((self.mario_loc[0], self.mario_loc[1] + 1)) != 'block':
+            self.possible_actions.append('up')
+        if self.mario_loc[0] != 1 and self.state_map.get((self.mario_loc[0] - 1, self.mario_loc[1])) != 'block':
+            self.possible_actions.append('left')
+        if self.mario_loc[1] != 1 and self.state_map.get((self.mario_loc[0], self.mario_loc[1] - 1)) != 'block':
+            self.possible_actions.append('down')
 
 
 def final_print():
@@ -63,7 +68,6 @@ def lrta_star_cost(input_state):
         else:
             min_big_h = min(min_big_h, result[input_state, temp_action].bigH + step_cost)
     # for temp in result.keys():
-    #     # print('action haii ke b block mikhoran check beshan')
     #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
     #         min_big_h = min(min_big_h, result.get(temp).bigH + step_cost)
     return min_big_h
@@ -74,6 +78,7 @@ def move(input_state):
     ideal_action = ''
     minimum_cost = 2147483647
 
+    ## finding the best move with the least cost:
     for temp_action in state.possible_actions:
 
         # !!! CHECK IF STATE AND THE STATE IN RESULT ARE THE SAME AND RESULT[STATE, ...] WORKS?!
@@ -90,9 +95,6 @@ def move(input_state):
             if ideal_action == '' or result.get(state, temp_action).bigH < minimum_cost:
                 ideal_action = temp_action
                 minimum_cost = min(minimum_cost, result[state, temp_action].bigH + step_cost)
-
-    # print('minimum cost for actions = %i  => ideal action = %s' % (minimum_cost, ideal_action))
-    # print('chosen action: ', ideal_action)
 
     next_map = state.state_map.copy()
     next_mario_loc = tuple()
@@ -143,9 +145,14 @@ def move(input_state):
         del next_state.state_map[state.mario_loc]
         next_state.mario_loc = next_mario_loc
 
-    print('\nminimum cost = %i  => ideal action = %s' % (minimum_cost, ideal_action))
-    print('mario\'s loc: %s + %s => %s' % (state.mario_loc, ideal_action, next_state.mario_loc))
-    print('new number of:\nred mushrooms= %i and blue mushrooms= %i' % (reds, blues))
+    ## updates possible actions for this new state considering new map
+    next_state.possible_actions_update()
+
+    # print('\nminimum cost = %i  => ideal action = %s' % (minimum_cost, ideal_action))
+    print('\nmario\'s loc: %s + %s => %s' % (state.mario_loc, ideal_action.upper(), next_state.mario_loc))
+    print('new map ', next_state.state_map)
+    print('new possible actions ', next_state.possible_actions)
+    print('\nnew amount of:\nRED mush= %i , BLUE mush= %i' % (reds, blues))
 
     global current
     current = State(next_map)
@@ -158,10 +165,6 @@ def move(input_state):
 
     global stepNums
     stepNums += 1
-
-    # return State
-    # for temp in result.keys():
-    #     if temp[0].state_map == input_state.state_map and temp[0].state_map != result[temp].state_map:
 
 
 ## data input from file and parameters creation:
@@ -224,12 +227,6 @@ while True:
         break
 
     print('\n\nSTEP %i:\n------' % stepNums)
-
-    # print('remaining heuristic: ', remaining)
-    # print('minimum_distance heuristic: ', minimum_distance_heuristic())
-    # print('maximum_distance heuristic: ', maximum_distance_heuristic())
-    # print('current_state map: ', current.state_map)
-    # print('last_state map: ', last)
 
     ## H(current state) update if current state is a NEW STATE:
     if not any(state.state_map == current.state_map for state in states):
