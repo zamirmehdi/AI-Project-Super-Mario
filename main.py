@@ -91,8 +91,19 @@ def move(input_state):
     ## finding the best move with the least cost:
     for temp_action in state.possible_actions:
 
-        # !!! CHECK IF STATE AND THE STATE IN RESULT ARE THE SAME AND RESULT[STATE, ...] WORKS?!
-        # agar be divar khord oon action az liste actionash pak she
+        for temp_tuple in result:
+
+            ## repeated actions may have new cost amounts
+            if temp_tuple[0].state_map == state.state_map and temp_tuple[1] == temp_action:
+                found = True
+
+                print('cost: ', temp_action, result.get(temp_tuple).bigH + step_cost)
+
+                if ideal_action == '' or result.get(temp_tuple).bigH < minimum_cost:
+                    ideal_action = temp_action
+                    minimum_cost = min(minimum_cost, result.get(temp_tuple).bigH + step_cost)
+
+                break
 
         ## new actions cost the amount of H(state)
         if result.get((state, temp_action)) is None:
@@ -258,6 +269,7 @@ while True:
     if not last_is_None:
         ### 1) add the previous action( + its origin state and its destination state ) to results
         result[last, action] = current
+        print('state numbers: ', len(states))
 
         ### 2) update H(last state) with minimum amount of relative states H (using LRTA*-Cost function)
         states[states.index(last)].big_h_update(lrta_star_cost(last))
