@@ -1,3 +1,6 @@
+import random
+
+
 class State:
 
     def __init__(self, input_map):
@@ -87,6 +90,11 @@ def move(input_state):
     state = input_state
     ideal_action = ''
     minimum_cost = 2147483647
+    found = False
+
+    # ## randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
+    # actions = state.possible_actions.copy()
+    # random.shuffle(actions)
 
     ## finding the best move with the least cost:
     for temp_action in state.possible_actions:
@@ -106,16 +114,14 @@ def move(input_state):
                 break
 
         ## new actions cost the amount of H(state)
-        if result.get((state, temp_action)) is None:
+        if not found:
             if ideal_action == '' or state.bigH <= minimum_cost:
+                print('cost new: ', temp_action, state.bigH)
+
                 ideal_action = temp_action
                 minimum_cost = min(minimum_cost, state.bigH)
 
-        ## repeated actions may have new cost amounts
-        else:
-            if ideal_action == '' or result.get(state, temp_action).bigH < minimum_cost:
-                ideal_action = temp_action
-                minimum_cost = min(minimum_cost, result[state, temp_action].bigH + step_cost)
+        found = False
 
     next_map = state.state_map.copy()
     next_mario_loc = tuple()
@@ -277,6 +283,3 @@ while True:
 
     ## take an action on current state:
     move(current)
-
-    if stepNums > 30:
-        break
