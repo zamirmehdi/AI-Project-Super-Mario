@@ -92,12 +92,12 @@ def move(input_state):
     minimum_cost = 2147483647
     found = False
 
-    # ## randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
-    # actions = state.possible_actions.copy()
-    # random.shuffle(actions)
+    ## randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
+    actions = state.possible_actions.copy()
+    random.shuffle(actions)
 
     ## finding the best move with the least cost:
-    for temp_action in state.possible_actions:
+    for temp_action in actions:
 
         for temp_tuple in result:
 
