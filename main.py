@@ -39,26 +39,28 @@ def final_print():
     print('final amount of mushrooms:\nRED = %i , BLUE = %i' % (reds, blues))
     print('**********----------------------------------------**********')
 
-def minimum_distance_heuristic():
-    first_try = 1
-    min_dist = 10000
-    for temp in current.state_map:
-        if current.state_map.get(temp) == 'blue' or current.state_map.get(temp) == 'red':
-            if first_try == 1:
-                min_dist = abs(temp[0] - x) + abs(temp[1] - y)
+
+def minimum_distance_heuristic(input_state):
+    first_try = True
+    for temp in input_state.state_map:
+        if input_state.state_map.get(temp) == 'blue' or input_state.state_map.get(temp) == 'red':
+            if first_try:
+                min_dist = abs(temp[0] - input_state.mario_loc[0]) + abs(temp[1] - input_state.mario_loc[1])
             else:
-                min_dist = min(min_dist, abs(temp[0] - x) + abs(temp[1] - y))
-                first_try -= 1
+                min_dist = min(min_dist,
+                               abs(temp[0] - input_state.mario_loc[0]) + abs(temp[1] - input_state.mario_loc[1]))
+                first_try = False
     return min_dist
 
 
-def maximum_distance_heuristic():
+def maximum_distance_heuristic(input_state):
     max_dist = -1
-    for first in current.state_map:
-        for second in current.state_map:
-            if (current.state_map.get(first) == 'blue' or current.state_map.get(first) == 'red') and (
-                    current.state_map.get(second) == 'blue' or current.state_map.get(second) == 'red'):
-                max_dist = max(max_dist, abs(first[0] - second[0]) + abs(first[0] - second[0]))
+    for first in input_state.state_map:
+        for second in input_state.state_map:
+            if (input_state.state_map.get(first) == 'blue' or input_state.state_map.get(first) == 'red') and (
+                    input_state.state_map.get(second) == 'blue' or input_state.state_map.get(second) == 'red'):
+                max_dist = max(max_dist, abs(first[0] - second[0]) + abs(first[1] - second[1]))
+
     return max_dist
 
 
