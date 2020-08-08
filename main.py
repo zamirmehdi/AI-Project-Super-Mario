@@ -42,6 +42,7 @@ def final_print():
 
 def minimum_distance_heuristic(input_state):
     first_try = True
+    min_dist = 2147483647
     for temp in input_state.state_map:
         if input_state.state_map.get(temp) == 'blue' or input_state.state_map.get(temp) == 'red':
             if first_try:
@@ -89,17 +90,19 @@ def move(input_state):
     ideal_action = ''
     minimum_cost = 2147483647
     found = False
+    global reds
+    global blues
 
-    ## randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
+    # randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
     actions = state.possible_actions.copy()
     random.shuffle(actions)
 
-    ## finding the best move with the least cost:
+    # finding the best move with the least cost:
     for temp_action in actions:
 
         for temp_tuple in result:
 
-            ## repeated actions may have new cost amounts
+            # repeated actions may have new cost amounts
             if temp_tuple[0].state_map == state.state_map and temp_tuple[1] == temp_action:
                 found = True
 
@@ -109,7 +112,7 @@ def move(input_state):
 
                 break
 
-        ## new actions cost the amount of H(state)
+        # new actions cost the amount of H(state)
         if not found:
             if ideal_action == '' or state.bigH <= minimum_cost:
                 ideal_action = temp_action
@@ -132,11 +135,11 @@ def move(input_state):
     if ideal_action == 'up':
         next_mario_loc = (state.mario_loc[0], state.mario_loc[1] + 1)
 
-    ## if the result of the chosen action is a BLOCK:
+    # if the result of the chosen action is a BLOCK:
     if givenMap.get(next_mario_loc) == 'block':
         next_state.state_map[next_mario_loc] = 'block'
 
-    ## if the result of the chosen action is a MUSHROOM:
+    # if the result of the chosen action is a MUSHROOM:
     elif state.state_map.get(next_mario_loc) == 'red' or state.state_map.get(next_mario_loc) == 'blue':
 
         global remaining
@@ -145,34 +148,34 @@ def move(input_state):
         del next_state.state_map[state.mario_loc]
         next_state.mario_loc = next_mario_loc
 
-        ## if the mushroom is RED:
+        # if the mushroom is RED:
         if state.state_map.get(next_mario_loc) == 'red':
             global redBool
             redBool = True
-            global reds
+            # global reds
             reds -= 1
 
-        ## if the mushroom is BLUE:
+        # if the mushroom is BLUE:
         else:
             global blueBool
             blueBool = True
-            global blues
+            # global blues
             blues -= 1
 
-    ## if the result of the chosen action is an EMPTY SPACE:
+    # if the result of the chosen action is an EMPTY SPACE:
     else:
         next_state.state_map[next_mario_loc] = 'mario'
         del next_state.state_map[state.mario_loc]
         next_state.mario_loc = next_mario_loc
 
-    ## updates possible actions for this new state considering new map
+    # updates possible actions for this new state considering new map
     next_state.possible_actions_update()
 
     # print('\nminimum cost = %i  => ideal action = %s' % (minimum_cost, ideal_action))
     print('\nmario\'s loc: %s + "%s" => %s' % (state.mario_loc, ideal_action.upper(), next_state.mario_loc))
     # print('new map ', next_state.state_map)
     # print('new possible actions ', next_state.possible_actions)
-    print('\nnew amount of mushrooms:\nRED = %i , BLUE = %i' % (reds, blues))
+    print('new amount of mushrooms:\nRED = %i , BLUE = %i' % (reds, blues))
 
     global current
     global last
@@ -188,92 +191,126 @@ def move(input_state):
     action = ideal_action
 
 
-## data input from file and parameters creation:
-f = open('/Users/apple/Desktop/Mario.txt')
-
-n = int(f.readline())
-m = int(f.readline())
-
-sc = list(f.readline().split())
-x, y = int(sc[0]), int(sc[1])
-
-k = int(f.readline())
-reds = blues = k
-
-blueBool = redBool = False
-blueSteps = redSteps = 0
-
-givenMap = dict()
-
-for i in range(k):
-    sc = list(f.readline().split())
-    givenMap[int(sc[0]), int(sc[1])] = 'red'
-for i in range(k):
-    sc = list(f.readline().split())
-    givenMap[int(sc[0]), int(sc[1])] = 'blue'
-
-for line in f:
-    if line.strip() != '':
-        sc = list(line.split())
-        givenMap[int(sc[0]), int(sc[1])] = 'block'
-
-givenMap[x, y] = 'mario'
-
-stepNums = 1
-remaining = 2 * k
-
-currentDict = dict()
-for key in givenMap.keys():
-    if givenMap[key] == 'red' or givenMap[key] == 'blue' or givenMap[key] == 'mario':
-        currentDict[key] = givenMap[key]
-
-current = State(currentDict.copy())
-
-last_is_None = True
-last = State(None)
-print('current')
-
-states = []
-
-result = dict()
-action = ''
-step_cost = 1
-
-print('\nGiven map: ', givenMap)
-print('''\n------------------------------------------------------------------
-*** LRTA* algorithm using REMAINING NUM OF MUSHROOMS heuristic ***
-------------------------------------------------------------------''')
 while True:
 
-    if redBool and blueBool:
-        final_print()
-        break
+    # data input from file and parameters creation:
+    f = open('/Users/apple/Desktop/Mario.txt')
 
-    print('\n\nSTEP %i:\n------' % stepNums)
+    n = int(f.readline())
+    m = int(f.readline())
 
-    ## H(current state) update if current state is a NEW STATE:
-    if not any(state.state_map == current.state_map for state in states):
-        current.big_h_update(remaining)
-        print('H(current state) updated to: ', current.bigH)
-        states.append(current)
+    sc = list(f.readline().split())
+    x, y = int(sc[0]), int(sc[1])
 
-    else:
-        for state in states:
-            if state.state_map == current.state_map:
-                current = state
-                print('H(current state) is: ', current.bigH)
-                break
-        # print('H(current state) is: ', states[states.index(current)].bigH)
+    k = int(f.readline())
+    reds = blues = k
 
-    ## if last state is not null do 2 things:
-    if not last_is_None:
-        ### 1) add the previous action( + its origin state and its destination state ) to results
-        result[last, action] = current
+    blueBool = redBool = False
+    blueSteps = redSteps = 0
 
-        ### 2) update H(last state) with minimum amount of relative states H (using LRTA*-Cost function)
-        states[states.index(last)].big_h_update(lrta_star_cost(last))
-        print('H(previous state) updated to: ', states[states.index(last)].bigH)
-        print('number of states:', len(states))
+    givenMap = dict()
 
-    ## take an action on current state:
-    move(current)
+    for i in range(k):
+        sc = list(f.readline().split())
+        givenMap[int(sc[0]), int(sc[1])] = 'red'
+    for i in range(k):
+        sc = list(f.readline().split())
+        givenMap[int(sc[0]), int(sc[1])] = 'blue'
+
+    for line in f:
+        if line.strip() != '':
+            sc = list(line.split())
+            givenMap[int(sc[0]), int(sc[1])] = 'block'
+
+    givenMap[x, y] = 'mario'
+
+    stepNums = 1
+    remaining = 2 * k
+
+    currentDict = dict()
+    for key in givenMap.keys():
+        if givenMap[key] == 'red' or givenMap[key] == 'blue' or givenMap[key] == 'mario':
+            currentDict[key] = givenMap[key]
+
+    current = State(currentDict.copy())
+
+    last_is_None = True
+    last = State(None)
+
+    states = []
+
+    result = dict()
+    action = ''
+    step_cost = 1
+
+    print('\nGiven map: \n', givenMap)
+
+    # selecting the heuristic for algorithm
+    print('\n> Enter option number of heuristic that you want to use:')
+    print('  1 > NUMBER of REMAINING mushrooms')
+    print('  2 > MINIMUM DISTANCE From remaining mushrooms')
+    print('  3 > MAXIMUM DISTANCE  Between remaining mushrooms')
+    print('  >>> or print "end" in order to stop the program')
+
+    while True:
+        heuristic_type = input('\n> ')
+        if heuristic_type == '1' or heuristic_type == '2' or heuristic_type == '3':
+            heuristic_type = int(heuristic_type)
+            break
+        elif heuristic_type == 'end':
+            exit()
+        else:
+            print('> choose between possible numbers please!')
+
+    heuristic_str = ''
+    if heuristic_type == 1:
+        heuristic_str = 'REMAINING NUM'
+    elif heuristic_type == 2:
+        heuristic_str = 'MINIMUM  DIST'
+    elif heuristic_type == 3:
+        heuristic_str = 'MAXIMUM  DIST'
+    print('\n------------------------------------------------------------------'
+          '\n*** LRTA* algorithm using %s OF MUSHROOMS heuristic ***'
+          '\n------------------------------------------------------------------' % heuristic_str)
+    while True:
+
+        if redBool and blueBool:
+            final_print()
+            time.sleep(1.7)
+            break
+
+        print('\n\nSTEP %i:\n------' % stepNums)
+
+        # H(current state) update if current state is a NEW STATE:
+        if not any(state.state_map == current.state_map for state in states):
+
+            if heuristic_type == 1:
+                current.big_h_update(remaining)
+            elif heuristic_type == 2:
+                current.big_h_update(minimum_distance_heuristic(current))
+            elif heuristic_type == 3:
+                current.big_h_update(maximum_distance_heuristic(current))
+
+            print('H(current state) updated to: ', current.bigH)
+            states.append(current)
+
+        else:
+            for state in states:
+                if state.state_map == current.state_map:
+                    current = state
+                    print('H(current state) is: ', current.bigH)
+                    break
+            # print('H(current state) is: ', states[states.index(current)].bigH)
+
+        # if last state is not null do 2 things:
+        if not last_is_None:
+            # 1) add the previous action( + its origin state and its destination state ) to results
+            result[last, action] = current
+
+            # 2) update H(last state) with minimum amount of relative states H (using LRTA*-Cost function)
+            states[states.index(last)].big_h_update(lrta_star_cost(last))
+            print('H(previous state) updated to: ', states[states.index(last)].bigH)
+            print('number of states:', len(states))
+
+        # take an action on current state:
+        move(current)
