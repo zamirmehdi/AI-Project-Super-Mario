@@ -93,6 +93,8 @@ def move(input_state):
     found = False
     global reds
     global blues
+    global redBool
+    global blueBool
 
     # randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
     actions = state.possible_actions.copy()
@@ -151,14 +153,12 @@ def move(input_state):
 
         # if the mushroom is RED:
         if state.state_map.get(next_mario_loc) == 'red':
-            global redBool
             redBool = True
             # global reds
             reds -= 1
 
         # if the mushroom is BLUE:
         else:
-            global blueBool
             blueBool = True
             # global blues
             blues -= 1
@@ -185,8 +185,9 @@ def move(input_state):
     current = next_state
     last_is_None = False
 
-    global stepNums
-    stepNums += 1
+    if not (redBool and blueBool):
+        global stepNums
+        stepNums += 1
 
     global action
     action = ideal_action
@@ -273,6 +274,8 @@ while True:
     print('\n------------------------------------------------------------------'
           '\n*** LRTA* algorithm using %s OF MUSHROOMS heuristic ***'
           '\n------------------------------------------------------------------' % heuristic_str)
+
+    #
     while True:
 
         if redBool and blueBool:
