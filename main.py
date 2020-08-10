@@ -193,9 +193,11 @@ def move(input_state):
     action = ideal_action
 
 
+# start of program
+# and it's in a loop in order to use the algorithm more than once and be able to use different possible heuristics
 while True:
 
-    # data input from file and parameters creation:
+    # data input from file and defining parameters:
     f = open('/Users/apple/Desktop/Mario.txt')
 
     n = int(f.readline())
@@ -205,12 +207,22 @@ while True:
     x, y = int(sc[0]), int(sc[1])
 
     k = int(f.readline())
+    remaining = 2 * k
     reds = blues = k
-
     blueBool = redBool = False
-    blueSteps = redSteps = 0
+
+    last_is_None = True
+    last = State(None)
+
+    step_cost = 1
+    stepNums = 1
+    action = ''
+
+    result = dict()
+    states = []
 
     givenMap = dict()
+    givenMap[x, y] = 'mario'
 
     for i in range(k):
         sc = list(f.readline().split())
@@ -224,11 +236,6 @@ while True:
             sc = list(line.split())
             givenMap[int(sc[0]), int(sc[1])] = 'block'
 
-    givenMap[x, y] = 'mario'
-
-    stepNums = 1
-    remaining = 2 * k
-
     currentDict = dict()
     for key in givenMap.keys():
         if givenMap[key] == 'red' or givenMap[key] == 'blue' or givenMap[key] == 'mario':
@@ -236,23 +243,14 @@ while True:
 
     current = State(currentDict.copy())
 
-    last_is_None = True
-    last = State(None)
-
-    states = []
-
-    result = dict()
-    action = ''
-    step_cost = 1
-
     print('\nGiven map: \n', givenMap)
 
     # selecting the heuristic for algorithm
-    print('\n> Enter option number of heuristic that you want to use:')
+    print('\n> Enter number of the heuristic you want to use:')
     print('  1 > NUMBER of REMAINING mushrooms')
     print('  2 > MINIMUM DISTANCE From remaining mushrooms')
     print('  3 > MAXIMUM DISTANCE  Between remaining mushrooms')
-    print('  >>> or print "end" in order to stop the program')
+    print('\n  >>> or print "end" in order to stop the program')
 
     while True:
         heuristic_type = input('\n> ')
@@ -262,7 +260,7 @@ while True:
         elif heuristic_type == 'end':
             exit()
         else:
-            print('> choose between possible numbers please!')
+            print('> choose from possible options please!')
 
     heuristic_str = ''
     if heuristic_type == 1:
@@ -275,7 +273,7 @@ while True:
           '\n*** LRTA* algorithm using %s OF MUSHROOMS heuristic ***'
           '\n------------------------------------------------------------------' % heuristic_str)
 
-    #
+    # Run
     while True:
 
         if redBool and blueBool:
