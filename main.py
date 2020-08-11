@@ -83,7 +83,7 @@ def lrta_star_cost(input_state):
                 break
 
         if not found:
-            min_big_h = min(min_big_h, input_state.bigH)
+            min_big_h = min(min_big_h, input_state.h)
 
         found = False
 
@@ -124,7 +124,7 @@ def move(input_state):
         if not found:
             if ideal_action == '' or state.bigH <= minimum_cost:
                 ideal_action = temp_action
-                minimum_cost = min(minimum_cost, state.bigH)
+                minimum_cost = min(minimum_cost, state.h)
 
         found = False
 
@@ -187,6 +187,14 @@ def move(input_state):
     global last_is_None
     last = current
     current = next_state
+
+    if heuristic_type == 1:
+        current.h_update(remaining)
+    elif heuristic_type == 2:
+        current.h_update(minimum_distance_heuristic(current))
+    elif heuristic_type == 3:
+        current.h_update(maximum_distance_heuristic(current))
+
     last_is_None = False
 
     if not (redBool and blueBool):
@@ -276,6 +284,13 @@ while True:
     print('\n------------------------------------------------------------------'
           '\n*** LRTA* algorithm using %s OF MUSHROOMS heuristic ***'
           '\n------------------------------------------------------------------' % heuristic_str)
+
+    if heuristic_type == 1:
+        current.h_update(remaining)
+    elif heuristic_type == 2:
+        current.h_update(minimum_distance_heuristic(current))
+    elif heuristic_type == 3:
+        current.h_update(maximum_distance_heuristic(current))
 
     # Run
     while True:
