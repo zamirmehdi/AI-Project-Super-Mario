@@ -12,6 +12,7 @@ class State:
         if input_map is not None:
             self.state_map = input_map
             self.bigH = 2147483647
+            self.h = 2147483647
             key_list = list(self.state_map.keys())
             val_list = list(self.state_map.values())
             self.mario_loc = key_list[val_list.index('mario')]
@@ -19,6 +20,9 @@ class State:
 
     def big_h_update(self, amount):
         self.bigH = min(self.bigH, amount)
+
+    def h_update(self, amount):
+        self.h = min(self.h, amount)
 
     def possible_actions_update(self):
         self.possible_actions.clear()
@@ -95,6 +99,7 @@ def move(input_state):
     global blues
     global redBool
     global blueBool
+    global remaining
 
     # randomize possible actions for state in order not to choose repeated actions and not to stay in a loop
     actions = state.possible_actions.copy()
@@ -145,7 +150,6 @@ def move(input_state):
     # if the result of the chosen action is a MUSHROOM:
     elif state.state_map.get(next_mario_loc) == 'red' or state.state_map.get(next_mario_loc) == 'blue':
 
-        global remaining
         remaining -= 1
         next_state.state_map[next_mario_loc] = 'mario'
         del next_state.state_map[state.mario_loc]
@@ -249,7 +253,7 @@ while True:
     print('\n> Enter number of the heuristic you want to use:')
     print('  1 > NUMBER of REMAINING mushrooms')
     print('  2 > MINIMUM DISTANCE From remaining mushrooms')
-    print('  3 > MAXIMUM DISTANCE  Between remaining mushrooms')
+    print('  3 > MAXIMUM DISTANCE Between remaining mushrooms')
     print('\n  >>> or print "end" in order to stop the program')
 
     while True:
